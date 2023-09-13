@@ -3,17 +3,7 @@ const mongoose = require("mongoose");
 
 require("dotenv").config();
 
-// const client = new MongoClient(uri, {
-//   serverApi: {
-//     version: ServerApiVersion.v1,
-//     strict: true,
-//     deprecationErrors: true,
-//   }
-// });
-
-async function runDatabaseConnection() {
-
-    const databaseName = 'inventory_application';
+async function runDatabaseConnection(databaseName) {
 
     const mongoDb = `mongodb+srv://admin:${process.env.MONGO_DB_PASSWORD}@cluster0.jqqmhiw.mongodb.net/${databaseName}?retryWrites=true&w=majority`;
 

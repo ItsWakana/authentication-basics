@@ -19,7 +19,7 @@ const User = mongoose.model(
 
 const app = express();
 
-runDatabaseConnection();
+runDatabaseConnection("authentication_basics");
   
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -32,9 +32,30 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// app.get("/", (req, res, next) => res.render("index"));
+app.get("/", (req, res, next) => res.render("index"));
 
-app.use("/", indexRouter);
+app.get("/sign-up", (req, res) => res.render("sign-up-form"));
+
+app.post("/sign-up", async (req, res, next) => {
+
+  const { username, password } = req.body;
+
+  try {
+    const user = new User({
+      username: username,
+      password: password
+    });
+  
+    const result = await user.save();
+
+    res.redirect("/");
+  } catch(err) {
+    return next(err);
+  }
+
+})
+
+// app.use("/", indexRouter);
 
 app.use(function(err, req, res, next) {
 
