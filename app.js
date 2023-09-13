@@ -1,29 +1,40 @@
-const createError = require('http-errors');
 const express = require('express');
 const path = require('path');
-const cookieParser = require('cookie-parser');
-const logger = require('morgan');
+const session = require("express-session");
+const passport = require("passport");
+const LocalStrategy = require("passport-local").Strategy;
 const runDatabaseConnection = require("./databaseConnect");
 const indexRouter = require("./routes/index");
+const mongoose = require("mongoose");
+
+const Schema = mongoose.Schema;
+
+const User = mongoose.model(
+  "User",
+  new Schema({
+    username: { type: String, required: true },
+    password: { type: String, required: true }
+  })
+);
 
 const app = express();
 
-runDatabaseConnection().catch(console.dir);
-
+runDatabaseConnection();
+  
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-app.use(logger('dev'));
+app.use(session({ secret: "cats", resave: false, saveUninitialized: true}));
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use("/", indexRouter);
+// app.get("/", (req, res, next) => res.render("index"));
 
-app.use(function(req, res, next) {
-  next(createError(404));
-});
+app.use("/", indexRouter);
 
 app.use(function(err, req, res, next) {
 
